@@ -8,6 +8,12 @@ all_files = dir(fullfile(my_dir, '*.tif'));
 
 imgs_tab = struct2table(all_files);
 
+% exception if only one image
+if class(imgs_tab.folder) == "char"
+    
+    img_path_list = [string(fullfile(imgs_tab.folder, imgs_tab.name )) ];
+else
+
 img_paths = strings(size(imgs_tab.folder));
 
 for i =1:numel(img_paths)
@@ -18,5 +24,7 @@ for i =1:numel(img_paths)
 end
     
 img_path_list = img_paths;
+
+end
 
 end

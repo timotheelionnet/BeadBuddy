@@ -1,0 +1,24 @@
+# MATLAB temporary and backup files
+*.asv
+*.m~
+*.fig~
+*.bak
+
+# Simulink autosave files
+*.autosave
+
+# MATLAB cache and preferences
+*.mlappinstall
+*.prj
+*.slxc
+*.slprj/
+*.mex*
+*.mat
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+*.orig

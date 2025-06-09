@@ -1,0 +1,55 @@
+Condition,Well,Channel,Time,Img,WellMask
+control,A01,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgA011_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskA01.txt
+control,A01,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgA011_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskA01.txt
+control,A01,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgA011_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskA01.txt
+control,A01,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgA012_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskA01.txt
+control,A01,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgA012_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskA01.txt
+control,A01,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgA012_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskA01.txt
+control,B08,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgB081_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskB08.txt
+control,B08,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgB081_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskB08.txt
+control,B08,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgB081_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskB08.txt
+control,B08,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgB082_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskB08.txt
+control,B08,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgB082_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskB08.txt
+control,B08,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgB082_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskB08.txt
+control,D12,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgD121_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskD12.txt
+control,D12,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgD121_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskD12.txt
+control,D12,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgD121_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskD12.txt
+control,D12,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgD122_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskD12.txt
+control,D12,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgD122_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskD12.txt
+control,D12,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/imgD122_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/control/maskD12.txt
+drug 1,A01,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgA011_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskA01.txt
+drug 1,A01,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgA011_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskA01.txt
+drug 1,A01,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgA011_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskA01.txt
+drug 1,A01,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgA012_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskA01.txt
+drug 1,A01,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgA012_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskA01.txt
+drug 1,A01,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgA012_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskA01.txt
+drug 1,B08,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgB081_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskB08.txt
+drug 1,B08,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgB081_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskB08.txt
+drug 1,B08,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgB081_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskB08.txt
+drug 1,B08,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgB082_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskB08.txt
+drug 1,B08,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgB082_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskB08.txt
+drug 1,B08,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgB082_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskB08.txt
+drug 1,D12,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgD121_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskD12.txt
+drug 1,D12,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgD121_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskD12.txt
+drug 1,D12,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgD121_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskD12.txt
+drug 1,D12,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgD122_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskD12.txt
+drug 1,D12,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgD122_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskD12.txt
+drug 1,D12,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/imgD122_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 1/maskD12.txt
+drug 2,A01,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgA011_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskA01.txt
+drug 2,A01,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgA011_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskA01.txt
+drug 2,A01,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgA011_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskA01.txt
+drug 2,A01,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgA012_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskA01.txt
+drug 2,A01,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgA012_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskA01.txt
+drug 2,A01,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgA012_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskA01.txt
+drug 2,B08,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgB081_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskB08.txt
+drug 2,B08,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgB081_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskB08.txt
+drug 2,B08,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgB081_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskB08.txt
+drug 2,B08,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgB082_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskB08.txt
+drug 2,B08,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgB082_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskB08.txt
+drug 2,B08,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgB082_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskB08.txt
+drug 2,D12,1,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgD121_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskD12.txt
+drug 2,D12,1,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgD121_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskD12.txt
+drug 2,D12,1,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgD121_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskD12.txt
+drug 2,D12,2,t1,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgD122_t1.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskD12.txt
+drug 2,D12,2,t2,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgD122_t2.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskD12.txt
+drug 2,D12,2,t3,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/imgD122_t3.txt,/Users/lionnett/Dropbox (HHMI)/code/MatlabCode/fileSet/example_folder/drug 2/maskD12.txt

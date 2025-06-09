@@ -24,8 +24,8 @@ disp('discrepancy is')
 disp(strcat(string(discrep), ' beads'))
 
 
-% are we within 1% of the bead count?
-if abs(discrep) > 0.01 *bead_cnt
+% are we within 10% of the bead count?
+if abs(discrep) > 0.1 *bead_cnt
     disp('optimizing detection thresh')
     opto = true;
     
@@ -80,14 +80,19 @@ if abs(discrep) > 0.01 *bead_cnt
 
         end
         
-        % if we are still within 1 % of the last count, then we will only
+        % if we are still within 5 % of the last count, then we will only
         % try two more times
-        if (prev_spot_cnt - 0.01* cur_spot_cnt < cur_spot_cnt ) && ( cur_spot_cnt < prev_spot_cnt + 0.01* cur_spot_cnt) 
+        if (prev_spot_cnt - 0.05* cur_spot_cnt < cur_spot_cnt ) && ( cur_spot_cnt < prev_spot_cnt + 0.05* cur_spot_cnt) 
             iter_cnt = iter_cnt +1;
         end
         
         if iter_cnt >3
             we_stuck = 1;
+        end
+
+        if cur_thresh == 0
+
+            we_suck =1;
         end
 
         if we_stuck ==1

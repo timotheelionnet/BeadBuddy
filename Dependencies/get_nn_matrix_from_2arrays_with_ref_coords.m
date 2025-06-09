@@ -1,7 +1,7 @@
 
 
 % table must ahve 
-function nn_res = get_nn_matrix_from_2arrays(tab1, tab2, nDims, nnThresh, mutualOnly)
+function nn_res = get_nn_matrix_from_2arrays_with_ref_coords(tab1, tab2, nDims, nnThresh, mutualOnly)
 
 % if mutalOnly is off, then we will only look for nns to tab1
 
@@ -11,7 +11,7 @@ function nn_res = get_nn_matrix_from_2arrays(tab1, tab2, nDims, nnThresh, mutual
 % nnThresh = 100;
 % mutualOnly =1;
 
-% OUTPUT is dr, dx, dy, dz
+% OUTPUT is dr, dx, dy, dz, x1, y1, z1
 
 
 
@@ -28,6 +28,8 @@ missed = 0;
             
 %Loop through each row (ie ref spot) and find nearest neighbor
 for p = 1:height(myDistMat)
+
+    cur_ref_loc = tab1(p, 1:3); % get xyz of ref loc
     
     %Store index of nn as nnIdx
     nnIdx = find(myDistMat(p,:) == min(myDistMat(p,:)));
@@ -44,7 +46,7 @@ for p = 1:height(myDistMat)
                 
                 %add it to the nn dataframe: dr, dx, dy, dz 
                 
-                drxyz  = [myDistMat(p, nnIdx), tab2(nnIdx,1:3) - tab1(p,1:3)];
+                drxyz  = [myDistMat(p, nnIdx), tab2(nnIdx,1:3) - tab1(p,1:3), cur_ref_loc];
 
                 nn_res = [nn_res ; drxyz ];
 
@@ -56,7 +58,7 @@ for p = 1:height(myDistMat)
             end
         else
 
-            drxyz  = [myDistMat(p, nnIdx), tab2(nnIdx,1:3) - tab1(p,1:3)];
+            drxyz  = [myDistMat(p, nnIdx), tab2(nnIdx,1:3) - tab1(p,1:3), cur_ref_loc];
 
             nn_res = [nn_res ; drxyz ];
                 

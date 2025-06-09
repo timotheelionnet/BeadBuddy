@@ -7,15 +7,20 @@ all_files = dir(fullfile(project_dir, '**/*.*'));
 
 all_files = struct2table(all_files);
 
+
 % get sub table with only images
 img_idx = contains(all_files.name, 'tif');
 bead_idx = contains(all_files.name, 'bead', 'IgnoreCase', 1);
 bead_img_table = all_files(img_idx & bead_idx, :);
 
+if sum(bead_idx) == 0
+    error("You have no image file names with substring 'bead' in them")
+end
+
 [d,parent] = (fileparts(bead_img_table.folder(1)));
 
 parent = char(parent);
-
+%%
 
 if strcmp(parent, 'raw_imgs') || strcmp(parent, 'split_channels')
 

@@ -1,0 +1,1 @@
+example file, condition drug 2; time 1; well B08; channel 1

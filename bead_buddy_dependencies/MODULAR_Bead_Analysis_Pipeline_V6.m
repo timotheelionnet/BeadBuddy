@@ -71,6 +71,11 @@ myParams = readParamsFromIniFile(beadConfigPath);
 %Extract ist of your channels with data to be localized
 allBeadChannels = myParams.channelDescription.fishChannelList;
 
+% remove non localizable beads
+
+rmv_idx = ~key_tab.isLocalizable;
+allBeadChannels(rmv_idx) = [];
+
 %Initialize cell array that will contain a column of image filepaths for each
 %channel. 
 myFileLists = cell(1, numel(allBeadChannels)); 
@@ -125,7 +130,7 @@ if runAirlocalize == 1
             n_beads = count_binary_beads_for_pipe(curImPath);
 
             % try running the optimizer
-            cur_thresh = 1; % initial guess for SD thresh val
+            cur_thresh = 3; % initial guess for SD thresh val
 
             bead_AL_thresh_optimizer % run
             
@@ -396,6 +401,8 @@ allNn_data = get_nn_matrix3(reflocList, regChLocLists, myNnThresh, nDims=3, voxS
 
 
 %% Crop FOV if desired
+crop = 0;
+cropRad = 1;
 
 if crop == 1
 
@@ -531,12 +538,52 @@ for i = 1:numel(regChannels)
     fResids{i}{1} = v(:,1) - fEvals{i}{1};
     fResids{i}{2} = v(:,2) - fEvals{i}{2};
     fResids{i}{3} = v(:,3) - fEvals{i}{3};
+
+    % plott a displacement field for example
+    f1 = figure;
+    myfit = dzFit;
+    myX = p(:,1);
+    myY = p(:,2);
+    myZ = v(:,3);
+    plot(myfit, [myX, myY], myZ);
+    title("EXAMPLE");
+    xlabel('X (nm)');
+    ylabel('Y (nm)');
+    zlabel('di (nm)');
+
+    
+    colormap(f1, "parula");
     
 %     remove BIG RESIDS
 
     % fResids{i}{1} = fResids{i}{1}(abs(fResids{i}{1}) < quantile(abs(fResids{i}{1}), 0.95));
     % fResids{i}{2} = fResids{i}{2}(abs(fResids{i}{2}) < quantile(abs(fResids{i}{2}), 0.95));
     % fResids{i}{3} = fResids{i}{3}(abs(fResids{i}{3}) < quantile(abs(fResids{i}{3}), 0.95));
+
+    % % lets evaluate the fit function over a grid-----------------------
+    % 
+    % % Specify the domain
+    % x_min = 1;
+    % x_max = imSize_nm(1);
+    % y_min = 1;
+    % y_max = imSize_nm(2);
+    % 
+    % % Specify the resolution of the grid
+    % ds_factor = 128; 
+    % num_points = floor(max(x_max, y_max) / factor);  % Number of points along each dimension
+    % 
+    % % Create a linearly spaced vector for each dimension
+    % x = linspace(x_min, x_max, num_points);
+    % y = linspace(y_min, y_max, num_points);
+    % 
+    % % Create the 2D grid of points
+    % [X, Y] = meshgrid(x, y);
+    % 
+    % % evaluate current fit functiosn over mesh
+    % feval(dxFit, [X Y])
+    % feval(dyFit, [X Y])
+    % feval(dzFit, [X Y])
+
   
 
     % store nn disp before and after correction

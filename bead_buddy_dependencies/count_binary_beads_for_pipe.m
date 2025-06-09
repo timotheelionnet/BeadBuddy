@@ -10,8 +10,26 @@ I = tiffreadVolume(im_path); % laod z stack
 
 I = max(I, [], 3); % get max projection
 
-
+% figure
 % imagesc(I);
+
+I2 = imgaussfilt(I, 40);
+
+% I2 = medfilt2(I, [100,100]);
+
+% I = imadjust(I);
+
+% I2 = reshape(I, [] , 1);
+% 
+% lv = median(I);
+% 
+% I = I - lv;
+
+I = imsubtract(I, I2);
+
+% figure 
+% imagesc(I);
+
 
 %%
 
@@ -24,13 +42,13 @@ Igray = mat2gray(I);
 %convert into grayscale image. 
 k = Igray;
 %calculate threshold using Otsu's method. 
-level=graythresh(k); 
+level= graythresh(k); 
   
 %convert into binary image using level. 
 k1=imbinarize(k,level); 
   
 %display the binarized image. 
-% imtool(k1); 
+imagesc(k1); 
 
 
 [L, num] = bwlabel(k1);

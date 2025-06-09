@@ -2,14 +2,13 @@
 % bead image files must be tifs
 % bead image files must be saved with substring 'bead' in name
 % cannot have '-' anywere in the name
-% please start by filling out USER INPUT chunk
-% proceed to run this script one chunk at a time
+
 
 %% TO DO
 
 % - error catches.
 % - cfg file directory level
-% -separate out GUI version and Non gui
+
 
 
 
@@ -25,10 +24,6 @@
 % FIJI_path = 'C:\Users\Lionnet Lab\Documents\Fiji.app';
 
 
-% whether to run localization
-% runAirlocalize = 1;
-    % set to 1 to analyze bead images
-    % set to 0 if loc files already present
 
 
 % ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -134,14 +129,22 @@ miji_process_bead_hyperstacks(bead_paths, split_ch_dir);
 
 %% AIRLOCALIZE
 
-%~~~RUN~~~%
-MODULAR_Bead_Analysis_Pipeline_V6 
+if runAirlocalize == 1
+
+    %~~~RUN~~~%
+    MODULAR_Bead_Analysis_Pipeline_V6 
+end
 
 %% Organize bead correction functions
 
-%~~~RUN~~~%
-organize_bead_buddy_functions_for_pipe
 
+if process_user_data == 1
+    %~~~RUN~~~%
+    organize_bead_buddy_functions_for_pipe
+
+else
+    return
+end
 
 %% Apply to user specified table (maybe have an easy way to apply to image format too)
 
@@ -150,15 +153,36 @@ organize_bead_buddy_functions_for_pipe
 % Reg is performed in nm
 % Saved as pixels
 
-raw_data_path = '/Users/finneganclark/Desktop/20240910_Bead_Buddy_Final_Code/demo_project/bead_buddy_test_data_4ch.xlsx';
-my_data = readtable(raw_data_path);
+% raw_data_path = '/Users/finneganclark/Desktop/20240910_Bead_Buddy_Final_Code/demo_project/bead_buddy_test_data_4ch.xlsx';
+% my_data = readtable(raw_data_path);
+
+% using GUI
+raw_data_path = user_input_data_path;
+my_data = readtable(user_input_data_path);
 disp(head(my_data));
 
 all_fish_channels = unique(my_data.channel);
 
 
 % % check headers for 2 or 3D data
-is_3D = 1;
+col_names = my_data.Properties.VariableNames;
+
+% case insensitive check if there is a z column
+is_3D = any(strcmpi('z', col_names));
+
+
+if is_3D ==1
+
+    ncol = numel(my_data.Properties.VariableNames);
+
+    if ncol ~= 5 % we need input columns :C, x, y, z, FOV
+        error('Input data must have columns in order: channel, x, y, z, FOV')
+    end
+
+    % rename columns for downstream use
+    my_data.Properties.VariableNames = {'channel', 'x', 'y', 'z', 'FOV'}
+end
+
 
 % output_tab initialize
 output_tab = my_data(my_data.channel == ref_ch, :);
@@ -208,7 +232,84 @@ for i = 1:numel(reg_ch_list)
 
         p_new = convert_loc_nm_to_pix(p_nm_new, voxSize);
 
+
+        % lets evaluate the fit function over a grid of test points-----------------------
+    
+        % Specify the domain
+        x_min = 1;
+        x_max = 2048 * voxSize(1) ;
+        y_min = 1;
+        y_max = 2048 * voxSize(2);
+    
+        % Specify the resolution of the grid
+        ds_factor = 128 * voxSize(1); 
+        num_points = floor(max(x_max, y_max) / ds_factor);  % Number of points along each dimension
+    
+        % Create a linearly spaced vector for each dimension
+        x = linspace(x_min, x_max, num_points);
+        y = linspace(y_min, y_max, num_points);
+    
+        % Create the 2D grid of points
+        [X, Y] = meshgrid(x, y);
+    
+        % evaluate current fit functiosn over mesh
+        mesh_dx = feval(cur_dx_func, [X(:) Y(:)]);
+        mesh_dy = feval(cur_dy_func, [X(:) Y(:)]);
+        mesh_dz = feval(cur_dz_func, [X(:) Y(:)]);
+
+        mesh_dr = sqrt(mesh_dx.^2 + mesh_dy.^2 + mesh_dz.^2 );
+
+        % now we want a heat map
+        mesh_dr_reshape =  reshape(mesh_dr, size(X));
+
+        f = figure;
+        imagesc(mesh_dr_reshape)
+        cb0 = colorbar;
+        cb0_lims = cb0.Limits;
+        colormap("Turbo")
+        my_title = "Predicted residuals for reg channel " + string(cur_ch);
+        title(my_title)
+        
+        save_dir = fullfile(project_dir, 'Model_visualization');
+        make_new_dir(save_dir)
+        save_name = fullfile(save_dir, my_title + '.pdf');
+
+        saveas(f, save_name);
+        disp('Predicted residuals heat map saved to')
+        disp(save_name)
+
+    else % only correct x and y columns
+
+        if ncol ~= 4 % we need input columns :C, x, y, FOV
+            error('Input data must have columns in order: channel, x, y, FOV')
+        end
+
+
+        voxSize =voxSize(1:2);
+
+        % apply corrections
+        old_x = cur_ch_tab.x;
+        old_y = cur_ch_tab.y;
+        
+
+        p = [old_x, old_y];
+
+        p_nm = convert_loc_pix_to_nm(p , voxSize);
+
+        dx = feval(cur_dx_func, p_nm(:, 1:2));
+        dy = feval(cur_dy_func, p_nm(:, 1:2));
+   
+
+        p_nm_new = p_nm - [dx dy];
+
+        p_new = convert_loc_nm_to_pix(p_nm_new, voxSize);
+ 
+
+
     end
+
+ 
+
     
     % generate a subtable for each corrected channel
     cur_ch_output = array2table( [cur_ch_tab.channel, p_new ,cur_ch_tab.FOV]);
@@ -225,21 +326,45 @@ end
 %% PLOTTING AND RESULTS
 
 
-% color palette for plots
-color_pal = lines(numel(all_fish_channels) + 3);
+% color palette for CDFs and other plots. 
+color_pal = lines((numel(all_fish_channels) * numel(all_fish_channels))*0.5  + 3);
 
-% loop thru raw vs corrected data
+%% Registration of user data visualization
+
+[d,f,ext] = fileparts(raw_data_path);
+
+residuals_dir = fullfile(d, 'residaul_plots_res');
+
+if ~exist(residuals_dir, 'dir')
+    mkdir(residuals_dir)
+end
+
+% loop thru raw vs corrected data for quiver plot
 for i = 1:numel(reg_ch_list)
 
     cur_ch = reg_ch_list(i);
 
     sub_tab_old = my_data(my_data.channel == cur_ch, :);
+    
+    % handle if user data is 3d or 2d
+    if is_3D == 1
 
-    r_old = [sub_tab_old(:,"x"), sub_tab_old(:,"y"), sub_tab_old(:,"z")];
+        r_old = [sub_tab_old(:,"x"), sub_tab_old(:,"y"), sub_tab_old(:,"z")];
+    
+        sub_tab_new = output_tab(output_tab.channel == cur_ch, :);
+    
+        r_new = [sub_tab_new(:,"x"), sub_tab_new(:,"y"), sub_tab_new(:,"z")];
 
-    sub_tab_new = output_tab(output_tab.channel == cur_ch, :);
+    else
 
-    r_new = [sub_tab_new(:,"x"), sub_tab_new(:,"y"), sub_tab_new(:,"z")];
+        r_old = [sub_tab_old(:,"x"), sub_tab_old(:,"y")];
+    
+        sub_tab_new = output_tab(output_tab.channel == cur_ch, :);
+    
+        r_new = [sub_tab_new(:,"x"), sub_tab_new(:,"y")];
+
+    end
+
 
 
     % xyz analysis for plots
@@ -252,44 +377,74 @@ for i = 1:numel(reg_ch_list)
 
     dxy = xy_new - xy_old;
 
-    dz = r_new.z - r_old.z;
+    if is_3D == 1
+
+        dz = r_new.z - r_old.z;
+    end
     
     % make quiver plot
-    figure
+    f1 = figure;
     % scatter(r_old.x, r_old.y)
     % hold on
     % scatter(r_new.x, r_new.y)
-    q = quiver(xy_old(:,1), xy_old(:,2), dxy(:,1), dxy(:,2), 0) ;
+
+    
+    quiver_scale = 2; % svale up quiver size for visualization purposes
+    q = quiver(xy_old(:,1), xy_old(:,2), dxy(:,1), dxy(:,2), 2) ;
     q.Color = cur_color;
 
-    title( sprintf('XY Correction of Channel %d Using Reference Channel %d', [reg_ch_list(i), ref_ch] ))
-    xlabel('x (pix)')
-    ylabel('y (pix)')
-
-    % dz heat map
-
-    zResids = dz; 
+    % need to set axis limits
+    xlim([0, max( xy_old(:,1) + dxy(:,1) )])
+    ylim([0, max( xy_old(:,2) + dxy(:,2) )])
     
-    %plot residual map
-    zResidsMap = min(quantile(zResids,0.9), max(quantile(zResids,0.1),zResids));
-    figure;
-    scatter3(r_new.x, r_new.y, zResids, 12*ones(size(r_new.x)),zResidsMap,'filled');
-    % quiver(myX, myY, myZ1, myZ2); %plots vectors originating at myX myY and with direction myZ1 myZ2
-    title( sprintf('Z Correction of Channel %d Using Reference Channel %d', [reg_ch_list(i), ref_ch] ))
+    myTitle = sprintf('XY Correction of Channel %d Using Reference Channel %d', [reg_ch_list(i), ref_ch] );
+    title(myTitle);
+    subtitle( sprintf('Quiver Scale = %d', quiver_scale));
+
     xlabel('x (pix)')
     ylabel('y (pix)')
-    zlabel('z (pix')
 
+    savefig(f1, fullfile(residuals_dir, myTitle));
+    saveas(f1, fullfile(residuals_dir, strcat(myTitle, '.png') ));
 
+    % dz heat map ------------------------------------
+    % if 3d, visualize the the magnitude of z correction
+    if is_3D == 1 
+
+    zResids = dz;  % true value is 0, so dz is residuals
+    
+        %plot residual map
+        zResidsMap = min(quantile(zResids,0.9), max(quantile(zResids,0.1),zResids));
+        f2 = figure;
+        scatter3(r_new.x, r_new.y, zResids, 12*ones(size(r_new.x)),zResidsMap,'filled');
+        % quiver(myX, myY, myZ1, myZ2); %plots vectors originating at myX myY and with direction myZ1 myZ2
+    
+        myTitle = sprintf('Z Correction of Channel %d Using Reference Channel %d', [reg_ch_list(i), ref_ch] );
+        title(myTitle)
+        xlabel('x (pix)')
+        ylabel('y (pix)')
+        zlabel('z (pix')
+    
+    
+        savefig(f2, fullfile(residuals_dir, myTitle));
+        saveas(f2, fullfile(residuals_dir, strcat(myTitle, '.png') ));
+    end
   
-    
-
-
-
+   
 end
+
+disp('~~~~~~~~~~');
+disp('Registration analsysis plots saved to:')
+disp(residuals_dir)
+disp('~~~~~~~~~~');
+
+
 
 
 %% CDF plots for all combos
+% nearest neighbor analysis between channels per FOV, CDF plotted for
+% all data
+
 [d,f,ext] = fileparts(raw_data_path);
 
 cdf_dir = fullfile(d, 'CDF_res');
@@ -354,8 +509,11 @@ for i = 1:numel(all_fish_channels)
         c2.Color = color_pal(ctr,:);
 
         
-        myTitle = sprintf('Nearest Neighbors Ch %d vs Ch %d', [ci, cj]);
+        myTitle = sprintf('3D Nearest Neighbors Ch %d vs Ch %d', [ci, cj]);
         title( myTitle )
+
+        x_text = '3D Distance (pixels)';
+        xlabel(x_text)
 
         legend({'raw', 'corrected'}, Location='east');
 
@@ -373,15 +531,16 @@ for i = 1:numel(all_fish_channels)
         writetable(cdf_table2, crxn_cdf_fname);
         
         
-
-
         % color ctr
         ctr = ctr +1 ;
         
     end
 end
 
-
+disp('~~~~~~~~~~');
+disp('CDFs saved to:')
+disp(cdf_dir)
+disp('~~~~~~~~~~');
 
 
 %% save
