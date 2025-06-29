@@ -1,16 +1,19 @@
+
 # BeadBuddy
 
-**BeadBuddy** is a flexible, user-friendly MATLAB tool for correcting chromatic errors in multi-channel single molecule imaging datasets. Designed to streamline the correction process through a guided graphical user interface (GUI), BeadBuddy integrates seamlessly with typical imaging workflows and data formats.
+**BeadBuddy** is a flexible, user-friendly MATLAB tool for correcting chromatic errors in multi-channel single molecule imaging datasets. Users simply image a fluorescent calibration bead slide at the beginning of their imaging session and then BeadBuddy handles the rest. 
+
+BeadBuddy analyzes the bead images to model arbitrary chromatic errors in three dimensions as a function of position in the imaging plane. It then applies the corrections to the user's dataset resulting in a more precise, more reproducible downstream analysis!
 
 ---
 
 ## 🧰 Features
 
-- Automated localization and analysis of bead images
-- Visualization of chromatic aberrations per channel
-- Nearest neighbor analysis to quantify correction effectiveness
-- Saves diagnostic plots and corrected data outputs
-- Intuitive, step-by-step GUI
+- Intuitive, step-by-step graphical user interface
+- Automated localization and analysis of fluorescent calibration bead images
+- Visualization of chromatic errors present in your imaging system and dataset
+- Handles 2D or 3D single-molecule localization datasets
+
 
 ---
 
@@ -43,7 +46,7 @@ You can practice with the demo dataset included in the repository. A full [video
 ### Quickstart Workflow
 1. **Thermalize the microscope** (~2.5–3 hours).
 2. **Acquire bead dataset**:
-   - 3×3 grid of Z-stacks
+   - 3×3 grid of Z-stacks (must be imaged in 3D regardless)
    - 2.5% overlap
    - All imaging channels used in your experiment
 3. **Acquire and localize single molecule data**.
@@ -51,7 +54,7 @@ You can practice with the demo dataset included in the repository. A full [video
      - `channel`
      - `x`
      - `y`
-     - `z` *(omit for 2D datasets)*
+     - `z` *(can be omitted for 2D datasets)*
      - `FOV`
 4. **Launch BeadBuddy GUI**:
    - The GUI will guide you through channel assignment and correction.
@@ -72,7 +75,7 @@ BeadBuddy generates the following:
 
 *(Insert GUI screenshot here)*
 
-![BeadBuddy GUI](path/to/example_gui.png)
+![BeadBuddy GUI](bb_gui.png)
 
 ---
 
