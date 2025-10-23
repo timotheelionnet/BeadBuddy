@@ -33,6 +33,12 @@ classdef bead_buddy_start_GUI < matlab.apps.AppBase
                 % Save the folder path to workspace as 'project_dir'
                 assignin('base', 'project_dir', folder);
             end
+
+            % Bring GUI back on top after file dialog
+            if isprop(app.UIFigure, 'AlwaysOnTop')
+                drawnow;
+                app.UIFigure.AlwaysOnTop = true;
+            end
         end
 
         % Button pushed function: LocateFileButton
@@ -49,6 +55,12 @@ classdef bead_buddy_start_GUI < matlab.apps.AppBase
                 
                 % Save the file path to workspace as 'user_input_data_path'
                 assignin('base', 'user_input_data_path', fullpath);
+            end
+
+            % Bring GUI back on top after file dialog
+            if isprop(app.UIFigure, 'AlwaysOnTop')
+                drawnow;
+                app.UIFigure.AlwaysOnTop = true;
             end
         end
 
@@ -188,6 +200,14 @@ classdef bead_buddy_start_GUI < matlab.apps.AppBase
 
             % Show the figure after all components are created
             app.UIFigure.Visible = 'on';
+
+            % In createComponents after making UIFigure
+            try
+                app.UIFigure.AlwaysOnTop = true; % R2023b+
+            catch
+                % fallback: do nothing or use JavaFrame trick if available
+            end
+
         end
     end
 

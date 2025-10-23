@@ -49,8 +49,8 @@ end
 
 % Report to user
 disp(' ');
-disp('Registration functions have been mapped to FISH channels');
-disp('cell ij contains function mapping FISH ch i to ch j')
+disp('Registration functions have been mapped to Loc Data channels');
+disp('cell ij contains function mapping Loc Data ch i to ch j (the reference channel')
 disp(' ');
 disp(reg_models);
 

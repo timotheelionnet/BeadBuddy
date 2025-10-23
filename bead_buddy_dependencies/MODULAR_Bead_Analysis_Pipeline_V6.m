@@ -8,7 +8,7 @@
 
 % clear
 %% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Define User Settings~~~~~~~~~~~~~~~~~~~~~~~~
-
+warning('off', 'all');
 %lets check for an ini file
 
 % ~~~~~~You must fill this out~~~~~~~~~~~~~~~~~~
@@ -657,6 +657,6 @@ savefig(resid_cdf, fullfile(resDir, 'goodnessOfFit_cdfs'));
 
 %%
 
-
+warning('on', 'all');
 
 disp('Bead Analysis Complete');

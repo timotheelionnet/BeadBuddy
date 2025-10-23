@@ -1,17 +1,16 @@
 
-
-% table must ahve 
 function nn_res = get_nn_matrix_from_2arrays(tab1, tab2, nDims, nnThresh, mutualOnly)
 
+% INPUT: 2 arrays, either XY or XYZ loc
 % if mutalOnly is off, then we will only look for nns to tab1
 
 % tab1 = locRef;
 % tab2 = locReg;
 % nDims = 3;
-% nnThresh = 100;
+% nnThresh = 100 in same units as loc;
 % mutualOnly =1;
 
-% OUTPUT is dr, dx, dy, dz
+% OUTPUT: dr, dx, dy, dz
 
 
 

@@ -37,6 +37,20 @@ function generate_channel_key_gui_V2
     
     % Pause the execution of the script until the figure is closed
     uiwait(hFig);
+
+    function bring_to_front()
+        drawnow;
+        figure(hFig);  % bring GUI to front
+        try
+            % Undocumented Java-based always-on-top trick
+            jFig = get(handle(hFig), 'JavaFrame');
+            jFig.fFigureClient.getWindow.setAlwaysOnTop(true);
+            pause(0.05); % short delay so OS registers it
+            jFig.fFigureClient.getWindow.setAlwaysOnTop(false);
+        catch
+            % Ignore if JavaFrame not available (newer MATLAB versions)
+        end
+    end    
     
     % Nested function for button callback to generate table
     function generate_table_callback(~, ~)
@@ -74,6 +88,7 @@ function generate_channel_key_gui_V2
             else
                 data{i, 7} = 'my fluor';    % dye (for rows beyond the first five)
             end
+            bring_to_front();
         end
         
         % Define specific column names
@@ -128,9 +143,12 @@ function generate_channel_key_gui_V2
         
         % Display a message indicating that the table has been saved
         msgbox(['Table data has been saved as ', saveDirName, '_channelKey.csv in the directory: ', dirName], 'Table Saved');
+
+        bring_to_front();
         
         % Close the GUI window
         close(hFig);
+        
     end
 
     % Nested function for close request
