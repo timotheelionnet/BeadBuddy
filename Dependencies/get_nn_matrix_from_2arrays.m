@@ -72,9 +72,10 @@ for p = 1:height(myDistMat)
        
 end
        
+pcnt_missed = round(100* (missed/height(tab1)),1);
     
 % Store number of unmatched tab1 spots 
-disp(strcat( string(missed/height(tab1)), ' of table1 spots were not matched (', string(missed), ' spots)'));
+disp(strcat( string( pcnt_missed ), '% of table1 spots were not matched (', string(missed), ' spots)'));
 
 
 

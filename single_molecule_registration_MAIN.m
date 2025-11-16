@@ -1,37 +1,35 @@
-%% CODE OVERVIEW
+%% BEADBUDDY
+
 % bead image files must be tifs
-% bead image files must be saved with substring 'bead' in name
-% cannot have '-' anywere in the name
+% bead image files must be saved with substring 'bead' in filename
+% bead image files cannot have '-' anywere in the name
+% user input datatable is expected to have units of pixels
+% If 3D, then columns: channel x, y, z, FOV
+% If 2D, then columns: channel x, y, FOV
 
 
-%% TO DO
+%% Check for required Toolboxes
+% List of required toolboxes
+requiredToolboxes = { ...
+    'Curve Fitting Toolbox',...
+    'Image Processing Toolbox',...
+    'Optimization Toolbox',...
+    'Statistics and Machine Learning Toolbox'
 
-% - error catches.
-% - cfg file directory level
+};
 
+% Get installed toolboxes
+v = ver;
+installedToolboxes = {v.Name};
 
+% Check for missing toolboxes
+missingToolboxes = setdiff(requiredToolboxes, installedToolboxes);
 
-
-%% USER INPUT COMMENTED OUT FOR GUI USE
-
-% specify path to folder containing your bead image hyperstacks
-% project_dir= '/Users/finneganclark/Desktop/20240910_Bead_Buddy_Final_Code/demo_project';
-
-% give vox size in nm (X,Y,Z)
-% voxSize = [100,100,250];
-
-% % user must specify the path to their FIJI install
-% FIJI_path = 'C:\Users\Lionnet Lab\Documents\Fiji.app';
-
-
-
-
-% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-% end of user input
-% ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
+if ~isempty(missingToolboxes)
+    error(['The following required MATLAB add-ons/toolboxes are missing:' newline ...
+        strjoin(missingToolboxes, newline) newline ...
+        'Please install them to run this script.']);
+end
 
 %% set working directory + add paths
 code_dir = fileparts(matlab.desktop.editor.getActiveFilename);
@@ -54,7 +52,7 @@ FIJI_path = checkAndPromptForFIJIPath(FIJI_path, code_dir);
 
 
 % use the GUI to get input info
-bead_buddy_start_GUI_v2
+bead_buddy_start_GUI_v3
 
 voxSize = [voxel_xy, voxel_xy, voxel_z];
 
@@ -144,6 +142,9 @@ if process_user_data == 1
     organize_bead_buddy_functions_for_pipe
 
 else
+    disp('~~~~~')
+    disp("BeadBuddy Complete :)")
+    disp('~~~~~')
     return
 end
 
@@ -190,7 +191,7 @@ if is_3D ==1
     end
 
     % rename columns for downstream use
-    my_data.Properties.VariableNames = {'channel', 'x', 'y', 'z', 'FOV'}
+    my_data.Properties.VariableNames = {'channel', 'x', 'y', 'z', 'FOV'};
 end
 
 
@@ -200,6 +201,9 @@ output_tab = my_data(my_data.channel == ref_ch, :);
 % get channels in users dataset
 reg_ch_list = setdiff(unique(my_data.channel), ref_ch);
 
+% model output dir
+model_out_dir = fullfile(project_dir, 'bead_analysis');
+make_new_dir(model_out_dir)
 
 % loop thru
 for i = 1:numel(reg_ch_list)
@@ -227,6 +231,8 @@ for i = 1:numel(reg_ch_list)
 
    
     if is_3D
+        disp('~~~~~')
+        disp(strcat('Correcting 3D Dataset channel', string(cur_ch)))
         % apply corrections
         old_x = cur_ch_tab.x;
         old_y = cur_ch_tab.y;
@@ -284,15 +290,16 @@ for i = 1:numel(reg_ch_list)
         cb0 = colorbar;
         cb0_lims = cb0.Limits;
         colormap("Turbo")
-        my_title = strcat("Modeled absolute chromatic error for Ch", string(cur_ch), "-", cur_reg_ch_name, 'vs reference ch: ', ref_ch_name);
+        ylabel(cb0, 'absolute displacement (nm)')
+        my_title = strcat("BeadBuddy model of absolute chromatic error for Ch", string(cur_ch), "-", cur_reg_ch_name, ' vs Reference Ch-', ref_ch_name);
         title(my_title)
         
-        save_dir = fullfile(project_dir, 'Model_visualization');
+        save_dir = fullfile(model_out_dir, 'heatmaps');
         make_new_dir(save_dir)
         save_name = fullfile(save_dir, my_title + '.pdf');
 
         saveas(f, save_name);
-        disp('Modeled chromatic errors heat map saved to')
+        disp('BeadBuddy chromatic error heat map saved to')
         disp(save_name)
         disp('')
 
@@ -318,35 +325,41 @@ for i = 1:numel(reg_ch_list)
         fdx = figure;
         imagesc(mesh_dx1_reshape)
         colormap("winter")
-        colorbar
-        title(strcat("dx--",cur_reg_ch_name));
+        c = colorbar;
+        ylabel(c, 'displacement (nm)')
+        title(strcat("dx--",cur_reg_ch_name, ' vs reference ch-', ref_ch_name));
+        save_dir = fullfile(model_out_dir, 'displacement_tiffs');
+        make_new_dir(save_dir)
         save_name = fullfile(save_dir, strcat("dx--",cur_reg_ch_name) + '.tif');
         % saveas(fdx, save_name);
 
-        save_float_tiff(mesh_dx1_reshape, save_dir, strcat("dx--",cur_reg_ch_name) + '.tif');
+        save_float_tiff(mesh_dx1_reshape, save_dir, strcat("dx--",cur_reg_ch_name, '.tif'));
 
         fdy = figure;
         imagesc(mesh_dy1_reshape)
         colormap("spring")
-        colorbar
-        title(strcat("dy--",cur_reg_ch_name));
+        c = colorbar;
+        ylabel(c, 'displacement (nm)')
+        title(strcat("dy--",cur_reg_ch_name, ' vs reference ch-', ref_ch_name));
 
         save_name = fullfile(save_dir, strcat("dy--",cur_reg_ch_name) + '.tif');
         % saveas(fdy, save_name);
+        save_float_tiff(mesh_dy1_reshape, save_dir, strcat("dy--",cur_reg_ch_name, '.tif'));
 
         fdz = figure;
         imagesc(mesh_dz1_reshape)
         colormap("summer")
-        colorbar
-        title(strcat("dz--",cur_reg_ch_name));
+        c = colorbar;
+        ylabel(c, 'displacement (nm)')
+        title(strcat("dz--",cur_reg_ch_name, ' vs reference ch-', ref_ch_name));
 
         save_name = fullfile(save_dir, strcat("dz--",cur_reg_ch_name) + '.tif');
         % saveas(fdz, save_name);
 
-        save_float_tiff(mesh_dz1_reshape, save_dir, strcat("dz--",cur_reg_ch_name, 'vs ') + '.tif');
+        save_float_tiff(mesh_dz1_reshape, save_dir, strcat("dz--",cur_reg_ch_name) + '.tif');
 
-        
-        disp('dx, dy,dz tiff images saved to:')
+        disp(' ')
+        disp('dx,dy,dz displacement fields (units = nm) as a function of pixel saved as signed tiff images to:')
         disp(save_dir)
         disp('')
         
@@ -489,6 +502,8 @@ for i = 1:numel(reg_ch_list)
 
 
 end
+close all
+
 
 %% PLOTTING AND RESULTS
 
@@ -496,15 +511,13 @@ end
 % color palette for CDFs and other plots. 
 color_pal = lines((numel(all_fish_channels) * numel(all_fish_channels))*0.5  + 3);
 
-%% Registration of user data visualization
+%% Register user data visualization
 
 [d,f,ext] = fileparts(raw_data_path);
 
-residuals_dir = fullfile(d, 'residaul_plots_res');
+res_dir = fullfile(project_dir, 'results');
 
-if ~exist(residuals_dir, 'dir')
-    mkdir(residuals_dir)
-end
+make_new_dir(res_dir)
 
 % loop thru raw vs corrected data for quiver plot
 for i = 1:numel(reg_ch_list)
@@ -517,36 +530,48 @@ for i = 1:numel(reg_ch_list)
     if is_3D == 1
 
         r_old = [sub_tab_old(:,"x"), sub_tab_old(:,"y"), sub_tab_old(:,"z")];
+        
     
         sub_tab_new = output_tab(output_tab.channel == cur_ch, :);
     
         r_new = [sub_tab_new(:,"x"), sub_tab_new(:,"y"), sub_tab_new(:,"z")];
+        
 
-    else
+    else % 2D only
 
         r_old = [sub_tab_old(:,"x"), sub_tab_old(:,"y")];
+        
     
         sub_tab_new = output_tab(output_tab.channel == cur_ch, :);
     
         r_new = [sub_tab_new(:,"x"), sub_tab_new(:,"y")];
+        
 
     end
 
 
 
-    % xyz analysis for plots
+    % QUIVER xyz analysis for plots in nm
 
     cur_color = color_pal(i,:);
 
     xy_old = [r_old.x, r_old.y];
 
+    xy_old_nm = convert_loc_pix_to_nm(xy_old, voxSize(1:2));
+
     xy_new = [r_new.x, r_new.y];
 
+    xy_new_nm = convert_loc_pix_to_nm(xy_new, voxSize(1:2));
+
     dxy = xy_new - xy_old;
+
+    dxy_nm = xy_new_nm - xy_old_nm;
 
     if is_3D == 1
 
         dz = r_new.z - r_old.z;
+
+        dz_nm = dz * voxSize(3);
     end
     
     % make quiver plot
@@ -557,56 +582,59 @@ for i = 1:numel(reg_ch_list)
 
     
     quiver_scale = 2; % svale up quiver size for visualization purposes
-    q = quiver(xy_old(:,1), xy_old(:,2), dxy(:,1), dxy(:,2), 2) ;
+    q = quiver(xy_old_nm(:,1), xy_old_nm(:,2), dxy_nm(:,1), dxy_nm(:,2), 2) ;
     q.Color = cur_color;
 
     % need to set axis limits
-    xlim([0, max( xy_old(:,1) + dxy(:,1) )])
-    ylim([0, max( xy_old(:,2) + dxy(:,2) )])
+    xlim([0, max( xy_old_nm(:,1) + dxy_nm(:,1) )])
+    ylim([0, max( xy_old_nm(:,2) + dxy_nm(:,2) )])
     
-    myTitle = sprintf('XY Correction of Channel %d Using Reference Channel %d', [reg_ch_list(i), ref_ch] );
+    myTitle = sprintf('Quiver Ch%d vs Ref Ch%d--XY Correction', [reg_ch_list(i), ref_ch] );
     title(myTitle);
     subtitle( sprintf('Quiver Scale = %d', quiver_scale));
 
-    xlabel('x (pix)')
-    ylabel('y (pix)')
+    xlabel('x (nm)')
+    ylabel('y (nm)')
 
-    savefig(f1, fullfile(residuals_dir, myTitle));
-    saveas(f1, fullfile(residuals_dir, strcat(myTitle, '.png') ));
+    save_dir = fullfile(res_dir, 'registration_viz');
+    make_new_dir(save_dir)
+
+    savefig(f1, fullfile(save_dir, myTitle));
+    saveas(f1, fullfile(save_dir, strcat(myTitle, '.png') ));
 
     % dz heat map ------------------------------------
     % if 3d, visualize the the magnitude of z correction
     if is_3D == 1 
 
-    zResids = dz;  % true value is 0, so dz is residuals
+    zResids = dz_nm;  % true value is 0, so dz is residuals
     
         %plot residual map
         zResidsMap = min(quantile(zResids,0.9), max(quantile(zResids,0.1),zResids));
         f2 = figure;
-        scatter3(r_new.x, r_new.y, zResids, 12*ones(size(r_new.x)),zResidsMap,'filled');
+        scatter3(xy_new_nm(:,1), xy_new_nm(:,2), zResids, 12*ones(size(r_new.x)),zResidsMap,'filled');
         % quiver(myX, myY, myZ1, myZ2); %plots vectors originating at myX myY and with direction myZ1 myZ2
     
-        myTitle = sprintf('Z Correction of Channel %d Using Reference Channel %d', [reg_ch_list(i), ref_ch] );
+        myTitle = sprintf('Z Correction Ch%d vs Ref Ch%d', [reg_ch_list(i), ref_ch] );
         title(myTitle)
-        xlabel('x (pix)')
-        ylabel('y (pix)')
-        zlabel('z (pix')
+        xlabel('x (nm)')
+        ylabel('y (nm)')
+        zlabel('z (nm)')
     
     
-        savefig(f2, fullfile(residuals_dir, myTitle));
-        saveas(f2, fullfile(residuals_dir, strcat(myTitle, '.png') ));
+        savefig(f2, fullfile(save_dir, myTitle));
+        saveas(f2, fullfile(save_dir, strcat(myTitle, '.png') ));
     end
   
    
 end
 
 disp('~~~~~~~~~~');
-disp('Registration analsysis plots saved to:')
-disp(residuals_dir)
+disp('Data correction plots saved to:')
+disp(save_dir)
 disp('~~~~~~~~~~');
 
 
-
+close all
 
 %% CDF plots for all combos
 % nearest neighbor analysis between channels per FOV, CDF plotted for
@@ -614,14 +642,14 @@ disp('~~~~~~~~~~');
 
 [d,f,ext] = fileparts(raw_data_path);
 
-cdf_dir = fullfile(d, 'CDF_res');
+cdf_dir = fullfile(res_dir, 'NN_analysis_CDF_plts');
 
 if ~exist(cdf_dir, 'dir')
     mkdir(cdf_dir)
 end
 
-% in pixels
-nnThresh = 10;
+% in nm
+nnThresh = sqrt(2) * max(sensor_size) * voxSize(1);
 
 % only keep mutual nn pairs
 mutualOnly = 1;
@@ -640,24 +668,30 @@ for i = 1:numel(all_fish_channels)
         % get r for ci before and after correction
         sub_tab_old1 = my_data(my_data.channel == ci, :);
         r_old1 = [sub_tab_old1.x, sub_tab_old1.y, sub_tab_old1.z];
+        r_old1_nm = convert_loc_pix_to_nm(r_old1, voxSize);
 
 
         sub_tab_new1 = output_tab(output_tab.channel == ci, :);
         r_new1 = [sub_tab_new1.x, sub_tab_new1.y, sub_tab_new1.z];
+        r_new1_nm = convert_loc_pix_to_nm(r_new1, voxSize);
 
         % get r for cj before and after correction
         sub_tab_old2 = my_data(my_data.channel == cj, :);
         r_old2 = [sub_tab_old2.x, sub_tab_old2.y, sub_tab_old2.z];
+        r_old2_nm = convert_loc_pix_to_nm(r_old2, voxSize);
 
 
         sub_tab_new2 = output_tab(output_tab.channel == cj, :);
         r_new2 = [sub_tab_new2.x, sub_tab_new2.y, sub_tab_new2.z];
+        r_new2_nm = convert_loc_pix_to_nm(r_new2, voxSize);
 
         % compute nn matrix for ci vs cj before and after correction
-
-        nn_res_old = get_nn_matrix_from_2arrays(r_old1, r_old2, nDims, nnThresh, mutualOnly);
-
-        nn_res_new = get_nn_matrix_from_2arrays(r_new1, r_new2, nDims, nnThresh, mutualOnly);
+        
+        disp('Before BB Correction')
+        nn_res_old = get_nn_matrix_from_2arrays(r_old1_nm, r_old2_nm, nDims, nnThresh, mutualOnly);
+        disp('After BB Correction')
+        nn_res_new = get_nn_matrix_from_2arrays(r_new1_nm, r_new2_nm, nDims, nnThresh, mutualOnly);
+        disp(strcat("NN Threshold =", string(nnThresh), "(nm)"))
 
 
 
@@ -676,13 +710,15 @@ for i = 1:numel(all_fish_channels)
         c2.Color = color_pal(ctr,:);
 
         
-        myTitle = sprintf('3D Nearest Neighbors Ch %d vs Ch %d', [ci, cj]);
+        myTitle = sprintf('3D Mutual Nearest Neighbors-User Dataset Ch %d vs Ch %d', [ci, cj]);
         title( myTitle )
 
-        x_text = '3D Distance (pixels)';
+        x_text = '3D NN Distance (nm)';
         xlabel(x_text)
 
         legend({'raw', 'corrected'}, Location='east');
+
+        % xlim([0,1])
 
         savefig(f, fullfile(cdf_dir, myTitle));
         saveas(f, fullfile(cdf_dir, strcat(myTitle, '.png') ));
@@ -709,18 +745,23 @@ disp('CDFs saved to:')
 disp(cdf_dir)
 disp('~~~~~~~~~~');
 
-
+close all
 %% save corrected user data
 
 [d,f,ext] = fileparts(raw_data_path);
 
-save_name = fullfile(d, strcat(f,'_BEADCRXN',ext));
+save_name = fullfile(res_dir, strcat(f,'_BEADCRXN',ext));
 
 writetable(output_tab, save_name);
 
 disp('~~~~~~~~~~');
-disp('Corrected data saved to:')
+disp('Corrected user dataset saved in units of pixels to:')
 disp(save_name)
 disp('~~~~~~~~~~');
+
+    
+disp("BeadBuddy Complete :)")
+fprintf("See %s for plots and results\n", project_dir);
+    
 
 

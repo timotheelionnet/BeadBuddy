@@ -1,4 +1,4 @@
-classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
+classdef bead_buddy_start_GUI_v3 < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -17,6 +17,8 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
         BeadCorrectCheckBox      matlab.ui.control.CheckBox
         LocateFileButton         matlab.ui.control.Button
         DatasetPathTextArea      matlab.ui.control.TextArea
+        InfoLabel                matlab.ui.control.Label   % <-- NEW
+        LogoImage                matlab.ui.control.Image
     end
 
     % Callbacks that handle component events
@@ -30,11 +32,10 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
                     app.UIFigure.AlwaysOnTop = true;
                 end
             catch
-                % ignore if not supported
             end
-            pause(0.05); % let OS process focus change
+            pause(0.05);
             try
-                figure(app.UIFigure); % request MATLAB focus
+                figure(app.UIFigure);
             catch
             end
         end
@@ -97,32 +98,47 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
 
         function createComponents(app)
 
-            % Create UIFigure and hide until all components are created
+            % Create UIFigure
             app.UIFigure = uifigure('Visible', 'off');
             app.UIFigure.Position = [100 100 400 400];
             app.UIFigure.Name = 'Bead Buddy Start GUI';
 
-            % Panels and controls
+            % --- TOP PANEL ---
             app.TopPanel = uipanel(app.UIFigure, 'Position', [0 270 400 130]);
+
+            app.LogoImage = uiimage(app.TopPanel, ...
+                'Position', [120 40 150 100], ...      % [x y width height], adjust as needed
+                'ImageSource', 'bb_logo.png', ...    % use the actual filename with extension
+                'ScaleMethod', 'fit', ...
+                'Tooltip', ':)');       % optional tooltip
 
             app.ProjectDirTextArea = uitextarea(app.TopPanel, ...
                 'Editable', 'off', ...
-                'Position', [20 70 250 30], ...
+                'Position', [20 10 250 30], ...
                 'Value', 'Select a project folder...');
 
             app.SelectFolderButton = uibutton(app.TopPanel, 'push', ...
                 'ButtonPushedFcn', createCallbackFcn(app, @SelectFolderButtonPushed, true), ...
-                'Position', [280 70 100 30], ...
+                'Position', [280 10 100 30], ...
                 'Text', 'Select Folder');
 
+            app.SelectFolderButton.Tooltip = {'project_folder', ...
+                '>> user_data.csv', ... 
+                '>> my_bead_imgs_folder',...
+                '>> >> ex_bead_img1.ome.tiff (files are tiffs, names must contain substring "bead" and no "-")',...
+                '>> >> ex_bead_img2.ome.tiff',...
+                '>> >> etc.'};
+% bead image files cannot have '-' anywere in the name
+
+
+            % --- MIDDLE PANEL ---
             app.MiddlePanel = uipanel(app.UIFigure, 'Position', [0 120 400 150]);
 
-            % Info label above voxel size inputs
+            % NEW INFO LABEL
             app.InfoLabel = uilabel(app.MiddlePanel, ...
                 'Text', 'Leave values = 1 if input is already in nm', ...
                 'HorizontalAlignment', 'center', ...
-                'Position', [20 115 360 22]);   % centered across the panel
-
+                'Position', [20 115 360 22]);
 
             app.VoxelXYLabel = uilabel(app.MiddlePanel, ...
                 'HorizontalAlignment', 'right', ...
@@ -132,6 +148,8 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
             app.NumberInput1 = uieditfield(app.MiddlePanel, 'numeric', ...
                 'Position', [160 90 100 22], 'Value', 1);
 
+            app.NumberInput1.Tooltip = 'Pixel size in XY (nm). Leave as 1 if already in nm.';
+
             app.VoxelZLabel = uilabel(app.MiddlePanel, ...
                 'HorizontalAlignment', 'right', ...
                 'Position', [50 50 100 22], ...
@@ -140,11 +158,16 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
             app.NumberInput2 = uieditfield(app.MiddlePanel, 'numeric', ...
                 'Position', [160 50 100 22], 'Value', 1);
 
+            app.NumberInput2.Tooltip = 'Step size in Z (nm). Leave as 1 if already in nm or SMLM dataset is 2D';
+
             app.OptionCheckBox = uicheckbox(app.MiddlePanel, ...
                 'Text', 'Run Airlocalize?', ...
                 'Position', [160 20 120 22], ...
                 'Value', true);
 
+            app.OptionCheckBox.Tooltip = 'Uncheck this box if you have run BeadBuddy on this project folder before';
+
+            % --- BOTTOM PANEL ---
             app.BottomPanel = uipanel(app.UIFigure, 'Position', [0 0 400 120]);
 
             app.BeadCorrectCheckBox = uicheckbox(app.BottomPanel, ...
@@ -152,6 +175,8 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
                 'Position', [20 80 150 22], ...
                 'Value', true, ...
                 'ValueChangedFcn', createCallbackFcn(app, @BeadCorrectCheckBoxValueChanged, true));
+
+            app.BeadCorrectCheckBox.Tooltip = 'Uncheck this if you just want to analyze your beads, ie no SMLM dataset to correct.';
 
             app.DatasetPathTextArea = uitextarea(app.BottomPanel, ...
                 'Editable', 'off', ...
@@ -163,12 +188,14 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
                 'Position', [20 10 150 30], ...
                 'Text', 'Locate Dataset (csv, xlsx)');
 
+            app.LocateFileButton.Tooltip = 'This is your SMLM dataset with columns: "channel", "x", "y" , "z", "FOV"';
+
             app.DoneButton = uibutton(app.UIFigure, 'push', ...
                 'ButtonPushedFcn', createCallbackFcn(app, @DoneButtonPushed, true), ...
                 'Position', [300 10 70 30], ...
                 'Text', 'Done');
 
-            % Show the figure
+            % Show
             app.UIFigure.Visible = 'on';
             app.bringToFront();
         end
@@ -177,7 +204,7 @@ classdef bead_buddy_start_GUI_v2 < matlab.apps.AppBase
     % App creation and deletion
     methods (Access = public)
 
-        function app = bead_buddy_start_GUI_v2
+        function app = bead_buddy_start_GUI_v3
             createComponents(app)
             registerApp(app, app.UIFigure)
             waitfor(app.UIFigure)

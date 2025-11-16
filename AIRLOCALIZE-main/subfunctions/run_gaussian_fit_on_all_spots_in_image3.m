@@ -165,10 +165,10 @@ nspots_found = size(loc,1);
 
 t = toc;  
 
-disp(['  eliminated ',num2str(nWrong),' wrong / ',num2str(nDouble),...
-    ' double identifications; there remain ',num2str(nspots_found),...
-    ' spots on image ',num2str(alData.fileIdx)]);
-disp(['  gaussian mask complete after ', num2str(t), ' s']);
+% disp(['  eliminated ',num2str(nWrong),' wrong / ',num2str(nDouble),...
+%     ' double identifications; there remain ',num2str(nspots_found),...
+%     ' spots on image ',num2str(alData.fileIdx)]);
+% disp(['  gaussian mask complete after ', num2str(t), ' s']);
 
 
 end

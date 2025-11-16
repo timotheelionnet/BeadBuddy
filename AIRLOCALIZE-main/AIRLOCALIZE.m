@@ -23,7 +23,7 @@ if nargin == 0
     
 elseif nargin == 1
     % read parameters from config file
-    disp('reading config file...');
+    % disp('reading config file...');
     parametersFilename = varargin{1};
     if ~isa(params,'airlocalizeParams') 
         params = airLocalizeParams();
@@ -33,14 +33,14 @@ elseif nargin == 1
     if strcmp(status,'cancel'), return;  end 
     
     % get list of files to analyze
-    disp('collecting list of files to analyze...');
+    % disp('collecting list of files to analyze...');
     alData = airLocalizeData();
     alData.setFListFromParams(params);
     if isempty(alData.getFList)
         disp('could not find files to analyze.');
         return
     else
-        disp(['Found ',num2str(numel(alData.getFList)),' files to analyze.']);
+        % disp(['Found ',num2str(numel(alData.getFList)),' files to analyze.']);
     end
     
     % if empty, default saving dir to the dir holding the first image in the
@@ -56,7 +56,7 @@ elseif nargin == 1
     end
     
     % figure out data dimensionality on first file of the list.
-    disp('setting data dimensionality...');
+    % disp('setting data dimensionality...');
     params.getNumDim(alData.getFList);
     if strcmp(params.fileProcessingMode,'cancel'), return;  end
     
@@ -165,9 +165,9 @@ for i=1:numel(alData.fList)
         params.saveSpotImg(loc,locVars,alData);
     end
     
-    disp('  done analyzing file.');
+    % disp('  done analyzing file.');
 end
-disp('done.');
+% disp('done.');
 
 end
 

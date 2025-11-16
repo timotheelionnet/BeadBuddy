@@ -159,6 +159,7 @@ if runAirlocalize == 1
 
             cur_ch = allBeadChannels(i);
             
+            disp('~~~~')
             disp(append("processing file ch:", string(i), " file:", string(j), " out of ", imageCount));
     
             
@@ -169,7 +170,7 @@ if runAirlocalize == 1
             % run airlocalize without GUI for the rest of the files
             loc = parlooper(myFileLists{i}{j}, locpar{i});
             
-            disp(append("Processed", string(myFileLists{i}{j})));
+            % disp(append("Processed", string(myFileLists{i}{j})));
             
             %For each image we want to store loc4 data and its file name in the
             %correct row of our loc4 fileSet column. loc4 is overwritten each
@@ -212,6 +213,7 @@ compiled_loc_tab.Properties.VariableNames = {'channel', 'x', 'y', 'z', 'FOV'};
 save_name = fullfile(resDir, 'compiled_loc_tab.csv');
 writetable(compiled_loc_tab, save_name);
 
+disp('~~~~')
 disp('Compiled loc table saved to:')
 disp(save_name)
 else
@@ -539,20 +541,20 @@ for i = 1:numel(regChannels)
     fResids{i}{2} = v(:,2) - fEvals{i}{2};
     fResids{i}{3} = v(:,3) - fEvals{i}{3};
 
-    % plott a displacement field for example
-    f1 = figure;
-    myfit = dzFit;
-    myX = p(:,1);
-    myY = p(:,2);
-    myZ = v(:,3);
-    plot(myfit, [myX, myY], myZ);
-    title("EXAMPLE");
-    xlabel('X (nm)');
-    ylabel('Y (nm)');
-    zlabel('di (nm)');
+    % % plott a displacement field for example
+    % f1 = figure;
+    % myfit = dzFit;
+    % myX = p(:,1);
+    % myY = p(:,2);
+    % myZ = v(:,3);
+    % plot(myfit, [myX, myY], myZ);
+    % title("EXAMPLE");
+    % xlabel('X (nm)');
+    % ylabel('Y (nm)');
+    % zlabel('di (nm)');
 
     
-    colormap(f1, "parula");
+    % colormap(f1, "parula");
     
 %     remove BIG RESIDS
 

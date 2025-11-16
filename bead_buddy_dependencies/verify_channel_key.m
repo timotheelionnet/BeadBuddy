@@ -8,6 +8,13 @@ if sum(key_tab.isReference) ~= 1
     
 end
 
+% make sure no localizable channel is set to ch 0
+if ismember(0, table2array(key_tab(key_tab.isLocalizable, ["uM_Bead_ch","uM_FISH_ch"])))
+    disp('Please revise your channel key')
+    error('You must designate a non-zero channel value for each channel to be localized')
+    
+end
+
 % make sure ref channel is localizable
 if key_tab.isLocalizable( find(key_tab.isReference)) ~= 1 
     disp('Please revise your channel key')
