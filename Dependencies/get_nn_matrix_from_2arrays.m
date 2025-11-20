@@ -43,7 +43,7 @@ for p = 1:height(myDistMat)
                 
                 %add it to the nn dataframe: dr, dx, dy, dz 
                 
-                drxyz  = [myDistMat(p, nnIdx), tab2(nnIdx,1:3) - tab1(p,1:3)];
+                drxyz  = [myDistMat(p, nnIdx), tab2(nnIdx,1:end) - tab1(p,1:end)];
 
                 nn_res = [nn_res ; drxyz ];
 

@@ -1,11 +1,11 @@
-function generate_channel_key_gui_V2
+function generate_channel_key_gui_V2(saveDir)
     % Create a figure window
     hFig = figure('Position', [100, 100, 700, 400], 'Name', 'Interactive Editable Table GUI', 'CloseRequestFcn', @closeRequestFcn);
     
     % Create a text label for rows
     uicontrol('Style', 'text', ...
               'Position', [50, 330, 120, 30], ...
-              'String', 'Total # Ch in Hyperstack', ...
+              'String', 'Max channel # in hyperstacks', ...
               'FontSize', 10);
           
     % Create an edit box for rows
@@ -39,18 +39,24 @@ function generate_channel_key_gui_V2
     uiwait(hFig);
 
     function bring_to_front()
-        drawnow;
-        figure(hFig);  % bring GUI to front
-        try
-            % Undocumented Java-based always-on-top trick
-            jFig = get(handle(hFig), 'JavaFrame');
-            jFig.fFigureClient.getWindow.setAlwaysOnTop(true);
-            pause(0.05); % short delay so OS registers it
-            jFig.fFigureClient.getWindow.setAlwaysOnTop(false);
-        catch
-            % Ignore if JavaFrame not available (newer MATLAB versions)
-        end
-    end    
+    drawnow;
+
+    % Bring onscreen and request focus
+    figure(hFig);
+
+    try
+        % Use MATLAB's built-in WindowAPI (no JavaFrame)
+        window = matlab.internal.desktop.WindowAPI.get(hFig);
+        window.setAlwaysOnTop(true);
+        pause(0.05);
+        window.setAlwaysOnTop(false);
+        window.requestFocus();
+    catch
+        % If WindowAPI not available (older versions), just figure()
+    end
+    end
+
+   
     
     % Nested function for button callback to generate table
     function generate_table_callback(~, ~)
@@ -68,22 +74,22 @@ function generate_channel_key_gui_V2
         data = cell(numRows, numCols);
         for i = 1:numRows
             if i == 1
-                data{i, 1} = 'Nucleus';     % names (first row)
+                data{i, 1} = 'Reference';     % names (first row)
             else
                 data{i, 1} = 'label';       % names (other rows)
             end
             if i == 1
-                data{i, 2} = 0;             % isLocalizable (first row)
+                data{i, 2} = 1;             % isLocalizable (first row)
             else
                 data{i, 2} = 1;             % isLocalizable (other rows)
             end
             data{i, 3} = 0;                 % isReference
-            data{i, 4} = i;                 % uM_FISH_ch (starting from 1)
+            data{i, 4} = i;                 % SMLM_data_ch (starting from 1)
             data{i, 5} = i - 1;             % uM_Bead_ch (starting from 0)
             data{i, 6} = 'scope';           % scope
             % Assigning dye values based on row index
-            if i <= 5
-                dyeValues = {'dapi', 'cy5', 'a594', 'cy3', 'a488'};
+            if i <= 4
+                dyeValues = {'Cy5', 'At594', 'Cy3', 'A488'};
                 data{i, 7} = dyeValues{i};
             else
                 data{i, 7} = 'my fluor';    % dye (for rows beyond the first five)
@@ -92,7 +98,7 @@ function generate_channel_key_gui_V2
         end
         
         % Define specific column names
-        colNames = {'names', 'isLocalizable', 'isReference', 'uM_FISH_ch', 'uM_Bead_ch', 'scope', 'dye'};
+        colNames = {'names', 'isLocalizable', 'isReference', 'SMLM_ch', 'bead_ch', 'scope', 'dye'};
         
         % Display the table in a uitable
         if isempty(hTable)
@@ -115,41 +121,65 @@ function generate_channel_key_gui_V2
 
     % Nested function for button callback to save table
     function save_table_callback(~, ~)
-        % Get the data from the uitable
-        tableData = get(hTable, 'Data');
-        
-        % Create column names
-        colNames = get(hTable, 'ColumnName');
-        
-        % Convert the cell array to a table object
-        tableObject = cell2table(tableData, 'VariableNames', colNames);
-        
-        % Ask user to select a directory for saving the .csv file
-        dirName = uigetdir('', 'Select a directory to save the .csv file');
-        if dirName == 0
-            % User canceled the dialog
-            return;
-        end
-        
-        % Generate the .csv file name
-        [~, saveDirName] = fileparts(dirName);  % Get the last folder name
-        csvFileName = fullfile(dirName, [saveDirName, '_channelKey.csv']);
-        
-        % Write the table to .csv file
-        writetable(tableObject, csvFileName);
-        
-        % Assign the table object to a variable in the base workspace
-        assignin('base', 'key_tab', tableObject);
-        
-        % Display a message indicating that the table has been saved
-        msgbox(['Table data has been saved as ', saveDirName, '_channelKey.csv in the directory: ', dirName], 'Table Saved');
+    % Get the data from the uitable
+    tableData = get(hTable, 'Data');
+    colNames = get(hTable, 'ColumnName');
 
-        bring_to_front();
-        
-        % Close the GUI window
-        close(hFig);
-        
+    % Convert to table
+    tableObject = cell2table(tableData, 'VariableNames', colNames);
+
+    % Create filename from folder name
+    [~, saveDirName] = fileparts(saveDir);
+    csvFileName = fullfile(saveDir, [saveDirName, '_channelKey.csv']);
+
+    % Write
+    writetable(tableObject, csvFileName);
+
+    % Export to base workspace
+    assignin('base', 'key_tab', tableObject);
+
+    msgbox(['Saved to: ' csvFileName], 'Table Saved');
+
+    bring_to_front();
+
+    close(hFig);
     end
+    % function save_table_callback(~, ~)
+    %     % Get the data from the uitable
+    %     tableData = get(hTable, 'Data');
+    % 
+    %     % Create column names
+    %     colNames = get(hTable, 'ColumnName');
+    % 
+    %     % Convert the cell array to a table object
+    %     tableObject = cell2table(tableData, 'VariableNames', colNames);
+    % 
+    %     % Ask user to select a directory for saving the .csv file
+    %     dirName = uigetdir('', 'Select a directory to save the .csv file');
+    %     if dirName == 0
+    %         % User canceled the dialog
+    %         return;
+    %     end
+    % 
+    %     % Generate the .csv file name
+    %     [~, saveDirName] = fileparts(dirName);  % Get the last folder name
+    %     csvFileName = fullfile(dirName, [saveDirName, '_channelKey.csv']);
+    % 
+    %     % Write the table to .csv file
+    %     writetable(tableObject, csvFileName);
+    % 
+    %     % Assign the table object to a variable in the base workspace
+    %     assignin('base', 'key_tab', tableObject);
+    % 
+    %     % Display a message indicating that the table has been saved
+    %     msgbox(['Table data has been saved as ', saveDirName, '_channelKey.csv in the directory: ', dirName], 'Table Saved');
+    % 
+    %     bring_to_front();
+    % 
+    %     % Close the GUI window
+    %     close(hFig);
+    % 
+    % end
 
     % Nested function for close request
     function closeRequestFcn(~, ~)

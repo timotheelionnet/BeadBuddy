@@ -2,11 +2,11 @@
 function [] = miji_process_bead_hyperstacks(bead_path_list, split_ch_dir)
 
 % check if split_ch_dir is already populated
-if check_for_file(split_ch_dir, 'tif') 
+if check_for_file(split_ch_dir, 'tif') | check_for_file(split_ch_dir, 'tif') 
     disp('~~~~~')
     disp('You already have stacks in your split channel dir:')
     disp(split_ch_dir)
-    disp('Delete the split channel folder if you need to MIJI image processing')
+    disp('Delete the split channel folder and reset your file tree to initial structure if you need to repeat MIJI image processing')
     disp('~~~~~')
 else
 

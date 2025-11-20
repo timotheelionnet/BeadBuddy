@@ -1,7 +1,7 @@
 %% Generate mapping functions for bead buddy pipeline
 
 % array that will hold our transformation functions
-reg_models = cell(max(max(key_tab.uM_FISH_ch), max(key_tab.uM_Bead_ch)));
+reg_models = cell(max(max(key_tab.SMLM_ch), max(key_tab.bead_ch)));
 res_dir = fullfile(bead_dir, 'res');
 [fits_found , fits_path] = check_for_fits(res_dir);
 
@@ -13,9 +13,9 @@ load(fits_path)
 
 %%
 % this is bead ch val for ref scope channel
-beadRefChIdx = key_tab.uM_Bead_ch( find(key_tab.isReference == 1));
+beadRefChIdx = key_tab.bead_ch( find(key_tab.isReference == 1));
 
-refChannel = key_tab.uM_FISH_ch( find(key_tab.isReference == 1));
+refChannel = key_tab.SMLM_ch( find(key_tab.isReference == 1));
 
 % loop thru all channels
 mapError=1;
@@ -26,11 +26,11 @@ for i = 1:numel(key_tab(:,"dye"))
 
         
         % get the uM FISH idx for the current laser line
-        fshIdx = key_tab.uM_FISH_ch(i);
+        fshIdx = key_tab.SMLM_ch(i);
         
 
         % get the uM bead idx that is for the same laser line
-        beadIdx = key_tab.uM_Bead_ch(i);
+        beadIdx = key_tab.bead_ch(i);
 
         % get the reg model that goes from current laser line to the
         % reference laser line (using bead idxs)
