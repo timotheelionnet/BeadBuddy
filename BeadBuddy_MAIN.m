@@ -45,8 +45,9 @@ addpath(pathWithSubfolders);
 disp(['Added the following directory to the MATLAB path: ' code_dir]);
 
 % See if we have correct FIJI path already saved in our txt file
-FIJI_path_text = fullfile('FIJI_path.txt');
-FIJI_path = fileread(FIJI_path_text);
+% FIJI_path_text = fullfile('FIJI_path.txt');
+% FIJI_path = fileread(FIJI_path_text);
+FIJI_path = fullfile(code_dir, "Dependencies/MIJI/");
 
 FIJI_path = checkAndPromptForFIJIPath(FIJI_path, code_dir);
 

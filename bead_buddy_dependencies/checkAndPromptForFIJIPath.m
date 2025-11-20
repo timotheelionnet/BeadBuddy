@@ -8,10 +8,12 @@ function dirPath = checkAndPromptForFIJIPath(dirName, code_dir)
         fprintf('Directory "%s" found.\n', dirName);
         dirPath = dirName;
     else
-        fprintf('Directory "%s" not found.\n', dirName);
+        disp('Locate the directory where FIJI is installed');
         
         % Create the GUI to prompt the user to locate the directory
-        dirPath = uigetdir(pwd, 'Locate the directory');
+        dirPath = uigetdir(pwd, 'Locate the directory where FIJI is installed');
+
+        % dirPath = fullfile(dirPath, 'Fiji');
         
         % Check if the user cancelled the GUI
         if isequal(dirPath, 0)
