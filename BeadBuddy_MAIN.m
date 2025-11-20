@@ -32,7 +32,7 @@ if ~isempty(missingToolboxes)
 end
 
 %% set working directory + add paths
-code_dir = fileparts(matlab.desktop.editor.getActiveFilename);
+code_dir = fileparts(which('BeadBuddy_MAIN.m'));
 cd(code_dir)
 
 % Generate a path string including all subfolders
