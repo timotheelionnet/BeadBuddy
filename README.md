@@ -6,12 +6,12 @@
 BeadBuddy analyzes the bead images to model arbitrary chromatic errors in three dimensions as a function of position in the imaging plane. It then applies the corrections to the user's dataset resulting in a more precise, more reproducible downstream analysis!
 
 **Watch the [BeadBuddy video tutorial](https://www.youtube.com/watch?v=72aow-Y2Re4)**
+
 **Test it out on our  [demo dataset](https://doi.org/10.5281/zenodo.17605122)**
 
 ---
 ## BeadBuddy Overview & GUI
 
-*(Insert GUI screenshot here)*
 
 ![BeadBuddy GUI](bb_gui.png)
 ---
