@@ -1,6 +1,7 @@
 %% BEADBUDDY
 
 % bead image files must be tifs
+% put all bead image tiffs in a subfolder within your project folder. Bead folder name should contain the substring "bead" 
 % bead image files must be saved with substring 'bead' in filename
 % bead image files cannot have '-' anywere in the name
 % user input datatable is expected to have units of pixels
