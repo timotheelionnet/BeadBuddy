@@ -595,7 +595,7 @@ for i = 1:numel(reg_ch_list)
     % scatter(r_new.x, r_new.y)
 
     
-    quiver_scale = 2; % svale up quiver size for visualization purposes
+    quiver_scale = 2; % scale up quiver size for visualization purposes
     q = quiver(xy_old_nm(:,1), xy_old_nm(:,2), dxy_nm(:,1), dxy_nm(:,2), 2) ;
     q.Color = cur_color;
 
@@ -665,6 +665,9 @@ end
 % in nm
 nnThresh = sqrt(2) * max(sensor_size) * voxSize(1);
 
+% unique FOVs
+my_FOVs = unique(my_data.FOV);
+
 % only keep mutual nn pairs
 mutualOnly = 1;
 
@@ -678,66 +681,87 @@ for i = 1:numel(all_fish_channels)
         ci = all_fish_channels(i);
         cj = all_fish_channels(j);
 
-        if is_3D == 1
-            % get r for ci before and after correction
-            sub_tab_old1 = my_data(my_data.channel == ci, :);
-            r_old1 = [sub_tab_old1.x, sub_tab_old1.y, sub_tab_old1.z];
-            r_old1_nm = convert_loc_pix_to_nm(r_old1, voxSize);
-    
-    
-            sub_tab_new1 = output_tab(output_tab.channel == ci, :);
-            r_new1 = [sub_tab_new1.x, sub_tab_new1.y, sub_tab_new1.z];
-            r_new1_nm = convert_loc_pix_to_nm(r_new1, voxSize);
-    
-            % get r for cj before and after correction
-            sub_tab_old2 = my_data(my_data.channel == cj, :);
-            r_old2 = [sub_tab_old2.x, sub_tab_old2.y, sub_tab_old2.z];
-            r_old2_nm = convert_loc_pix_to_nm(r_old2, voxSize);
-    
-    
-            sub_tab_new2 = output_tab(output_tab.channel == cj, :);
-            r_new2 = [sub_tab_new2.x, sub_tab_new2.y, sub_tab_new2.z];
-            r_new2_nm = convert_loc_pix_to_nm(r_new2, voxSize);
-        else % 2D dataset
+        % init arrays to store NN analysis per FOVs
+        nn_res_old_cumulative = [];
+        nn_res_new_cumulative = [];
+        disp('~~~~~~')
+        fprintf("SMLM ch%d vs ch%d", ci, cj)
 
-            % get r for ci before and after correction
-            sub_tab_old1 = my_data(my_data.channel == ci, :);
-            r_old1 = [sub_tab_old1.x, sub_tab_old1.y];
-            r_old1_nm = convert_loc_pix_to_nm(r_old1, voxSize(1:2));
-    
-    
-            sub_tab_new1 = output_tab(output_tab.channel == ci, :);
-            r_new1 = [sub_tab_new1.x, sub_tab_new1.y];
-            r_new1_nm = convert_loc_pix_to_nm(r_new1, voxSize(1:2));
-    
-            % get r for cj before and after correction
-            sub_tab_old2 = my_data(my_data.channel == cj, :);
-            r_old2 = [sub_tab_old2.x, sub_tab_old2.y];
-            r_old2_nm = convert_loc_pix_to_nm(r_old2, voxSize(1:2));
-    
-    
-            sub_tab_new2 = output_tab(output_tab.channel == cj, :);
-            r_new2 = [sub_tab_new2.x, sub_tab_new2.y];
-            r_new2_nm = convert_loc_pix_to_nm(r_new2, voxSize(1:2));
-        end
+        for k = 1:numel(my_FOVs)
+            
+            % analyze one FOV at a time
+            cur_FOV = my_FOVs(k); 
+            
 
 
-        % compute nn matrix for ci vs cj before and after correction
+            if is_3D == 1
+                % get r for ci before and after correction
+                sub_tab_old1 = my_data(my_data.channel == ci & my_data.FOV == cur_FOV, :);
+                r_old1 = [sub_tab_old1.x, sub_tab_old1.y, sub_tab_old1.z];
+                r_old1_nm = convert_loc_pix_to_nm(r_old1, voxSize);
         
-        disp('Before BB Correction')
-        nn_res_old = get_nn_matrix_from_2arrays(r_old1_nm, r_old2_nm, nDims, nnThresh, mutualOnly);
-        disp('After BB Correction')
-        nn_res_new = get_nn_matrix_from_2arrays(r_new1_nm, r_new2_nm, nDims, nnThresh, mutualOnly);
-        disp(strcat("NN Threshold =", string(nnThresh), "(nm)"))
+        
+                sub_tab_new1 = output_tab(output_tab.channel == ci & output_tab.FOV == cur_FOV, :);
+                r_new1 = [sub_tab_new1.x, sub_tab_new1.y, sub_tab_new1.z];
+                r_new1_nm = convert_loc_pix_to_nm(r_new1, voxSize);
+        
+                % get r for cj before and after correction
+                sub_tab_old2 = my_data(my_data.channel == cj & my_data.FOV == cur_FOV, :);
+                r_old2 = [sub_tab_old2.x, sub_tab_old2.y, sub_tab_old2.z];
+                r_old2_nm = convert_loc_pix_to_nm(r_old2, voxSize);
+        
+        
+                sub_tab_new2 = output_tab(output_tab.channel == cj & output_tab.FOV == cur_FOV, :);
+                r_new2 = [sub_tab_new2.x, sub_tab_new2.y, sub_tab_new2.z];
+                r_new2_nm = convert_loc_pix_to_nm(r_new2, voxSize);
+            else % 2D dataset
+    
+                % get r for ci before and after correction
+                sub_tab_old1 = my_data(my_data.channel == ci & my_data.FOV == cur_FOV, :);
+                r_old1 = [sub_tab_old1.x, sub_tab_old1.y];
+                r_old1_nm = convert_loc_pix_to_nm(r_old1, voxSize(1:2));
+        
+        
+                sub_tab_new1 = output_tab(output_tab.channel == ci & output_tab.FOV == cur_FOV, :);
+                r_new1 = [sub_tab_new1.x, sub_tab_new1.y];
+                r_new1_nm = convert_loc_pix_to_nm(r_new1, voxSize(1:2));
+        
+                % get r for cj before and after correction
+                sub_tab_old2 = my_data(my_data.channel == cj & my_data.FOV == cur_FOV, :);
+                r_old2 = [sub_tab_old2.x, sub_tab_old2.y];
+                r_old2_nm = convert_loc_pix_to_nm(r_old2, voxSize(1:2));
+        
+        
+                sub_tab_new2 = output_tab(output_tab.channel == cj & output_tab.FOV == cur_FOV, :);
+                r_new2 = [sub_tab_new2.x, sub_tab_new2.y];
+                r_new2_nm = convert_loc_pix_to_nm(r_new2, voxSize(1:2));
+            end
+    
+    
+            % compute nn matrix for ci vs cj before and after correction
+            
+            disp('Before BB Correction')
+            nn_res_old = get_nn_matrix_from_2arrays(r_old1_nm, r_old2_nm, nDims, nnThresh, mutualOnly);
+            disp('After BB Correction')
+            nn_res_new = get_nn_matrix_from_2arrays(r_new1_nm, r_new2_nm, nDims, nnThresh, mutualOnly);
+            disp(strcat("NN Threshold =", string(nnThresh), "(nm)"))
+
+            
+            % concat the NN analysis per FOV
+            nn_res_old_cumulative = vertcat(nn_res_old_cumulative, nn_res_old);
+
+            nn_res_new_cumulative = vertcat(nn_res_new_cumulative, nn_res_new);
+
+        end
 
 
 
         f = figure;
 
-        c1 = cdfplot(nn_res_old(:,1));
+        c1 = cdfplot(nn_res_old_cumulative(:,1));
         
         hold on
-        c2 = cdfplot(nn_res_new(:,1));
+        c2 = cdfplot(nn_res_new_cumulative(:,1));
         grid off
 
         c1.LineWidth = my_LW;
